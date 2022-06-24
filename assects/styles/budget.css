@@ -1,0 +1,25 @@
+.budget-section {
+    text-align: center;
+}
+.budget-expense-type {
+    width: 200px;
+    height: 40px;
+    border: 1px solid #ffffff;
+    font-size: 18px;
+    color: #1c87c9;
+    background-color: #eee;
+    border-radius: 5px;
+}
+#amount{
+    border-radius: 5px;
+}
+.add-btn{
+    border-radius: 5px;
+}
+table {
+   width: 100%;
+}
+
+.half-width {
+   width: 10%;
+}

@@ -1,0 +1,226 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Budget App</title>
+    <link rel="stylesheet" href="./assects/styles/main.css">
+    <link rel="stylesheet" href="./assects/styles/budget.css">
+    <link rel="stylesheet" href="./assects/styles/modal.css">
+    </head>
+
+<body onload="initiateExpenses()">
+
+    <header>
+        <nav>
+            <img class="logo" src="./assects/images/algogo.jpg" alt="" width="80" height="80">
+            <ul class="mainMenu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="budget.html">Budget</a></li>
+                <li>
+                    <a href="#">Versions</a>
+                    <ul class="subMenu">
+                        <li><a href="v1/index.html">Version-1</a></li>
+                        <li><a href="index.html">Version-2</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+        </nav>
+    </header>
+    <hr>
+    <main class="budget-page">
+        <div class="budget-section">
+            <select name="expense_type" id="expense_type" class="budget-expense-type">
+                <option value=" breakfast">Breakfast</option>
+                <option value="launch">Launch</option>
+                <option value="phone_bill">Phone Bill</option>
+            </select>
+            <input type="number" id="amount">
+            <button onclick="onAdd()" class="add-btn">ADD</button>
+            <div id="snackbar">
+                <p class="float-left" id="message-area">Invalid input!</p>
+                <button id="close-snackbar" class="float-right">&times;</button>
+            </div>
+            <button id="open-snackbar">Open</button>
+            <div id="modal-overlay">
+                <div id="modal-container">
+                    <b class="float-left">Edit Expenae</b>
+                    <button id="close-modal" class="float-right">&times;</button>
+                    <div class="clearfix"></div>
+
+                    <select id="edit_expense_type" class="budget-expense-type">
+                        <option value="breakfast">Breakfast</option>
+                        <option value="launch">launch</option>
+                        <option value="phone_bill">Phone Bill</option>
+                    </select>
+
+                    <input type="number" id="edit_amount">
+                    <input type="number" id="existed_id">
+
+                    <button onclick="onEdit()" class="add-btn">UPDATE</button>
+                </div>
+            </div>
+            <button id="open-modal">Open</button>
+            <div>
+                <h3>Expenses</h3>
+                <table border="1" id="expenseTable">
+                    <tr>
+                        <th>Id</th>
+                        <th>Title</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </table>
+             </div>
+    </main>
+</body>
+<script src="./assects/js/modal.js"></script>
+<script>
+    function onAdd() {
+        let expType = document.getElementById('expense_type')
+        let expAmt = document.getElementById('amount')
+        saveExpense(expType, expAmt)
+    }
+
+    function onEdit() {
+    let expType = document.getElementById('edit_expense_type')
+    let expAmt = document.getElementById('edit_amount')
+    let expId = document.getElementById('existed_id').value
+    saveExpense(expType, expAmt, expId)
+    closeModalBtn.click()
+}
+
+    function saveExpense(expType, expAmt,expId=null) {
+        try {
+    expenseType = expType.value
+    expenseAmount = expAmt.value
+    if (isNaN(expenseAmount) || expenseAmount === '' || expenseAmount <= 0) {
+        // openSnackBtn.click()
+        // return;
+        // throw "Invalid input error"
+        alert("hello")
+        throw{
+            status:500,
+            message:'Invalid Input Error'
+        }
+    }
+    expenseAmount = expenseAmount.replace(/^0+/, '');
+    expenseAmount = Math.round(expenseAmount)
+    let newExpense = {
+        'expense_type': expenseType, 'amount': expenseAmount
+    }; 
+    if (expId) {
+        newExpense.id = parseInt(expId)
+    }
+    expAmt.value = ''
+    saveToLocalStorage(newExpense)
+} catch (error) {
+    showMessage(error)
+}
+    }
+
+    // store datas in local Storage
+    function saveToLocalStorage(expense) {
+    let totalExpenses = [];//js object (array)
+    if (localStorage.getItem('expenses')) {
+        totalExpenses = JSON.parse(localStorage.getItem('expenses'))
+    }
+    if (expense.id) {
+        expense = {
+            id: expense.id, ...expense
+        }
+        const foundIndex = totalExpenses.findIndex(
+            originExpense => originExpense.id === expense.id
+        )
+        totalExpenses.splice(foundIndex, 1, {
+            ...expense
+        })
+        window.localStorage.setItem("expenses", JSON.stringify(totalExpenses));
+        showMessage({status:200,message:"Sucessfully update"})
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+        return;
+    } else {
+        let lastId = totalExpenses.slice(-1).length > 0 ? parseInt(totalExpenses.slice(-1)[0].id) : 0
+        expense = {
+            id: lastId + 1, ...expense
+        }
+        totalExpenses.push(expense) // js object (array)
+        window.localStorage.setItem("expenses", JSON.stringify(totalExpenses));
+        appendToExpenses(expense)
+        showMessage({status:200,message:"Sucessfully added"})
+    }
+    }
+
+    function appendToExpenses(expenseObj) {
+        let expenseTable = document.getElementById('expenseTable');
+        let trElement = document.createElement('tr')
+        let expenseTypeTd = document.createElement('td');
+        let idTd = document.createElement('td');
+        let amountTd = document.createElement('td');
+
+        let id = document.createTextNode(expenseObj.id)
+        let expenseType = document.createTextNode(expenseObj.expense_type)
+        let amount = document.createTextNode(expenseObj.amount)
+
+        let editBtn = document.createElement('button')
+        editBtn.innerHTML = 'Edit'
+        editBtn.classList.add("float-left");
+        editBtn.onclick = function () {
+            let editAmount = document.getElementById('edit_amount')
+            let editExpenseType = document.getElementById('edit_expense_type')
+            editExpenseType.value = expenseObj.expense_type
+            editAmount.value = expenseObj.amount
+            openModalBtn.click()
+        };
+
+        let deleteBtn = document.createElement('button')
+        deleteBtn.innerHTML = 'Delete'
+        deleteBtn.classList.add("float-left", "bg-red");
+        deleteBtn.onclick = function () {
+            deleteItem(expenseObj, this)
+        };
+        let actionBtns = document.createElement('td')
+        actionBtns.classList.add('half-width')
+        actionBtns.appendChild(editBtn)
+        actionBtns.appendChild(deleteBtn)
+
+        idTd.appendChild(id)
+        expenseTypeTd.appendChild(expenseType)
+        amountTd.appendChild(amount)
+
+        trElement.appendChild(idTd)
+        trElement.appendChild(expenseTypeTd)
+        trElement.appendChild(amountTd)
+        trElement.appendChild(actionBtns)
+
+        expenseTable.appendChild(trElement);
+    }
+
+    function initiateExpenses() {
+        let totalExpenses = JSON.parse(localStorage.getItem('expenses')) || [];
+        if (totalExpenses.length > 0) {
+            let expenseLength = totalExpenses.length;
+            for (i = 0; i < expenseLength; i++) {
+                appendToExpenses(totalExpenses[i]);
+            }
+        }
+    }
+
+    function deleteItem(obj, selectedElement) {
+    let totalExpenses = JSON.parse(localStorage.getItem('expenses')) || [];
+    let findIndex = totalExpenses.findIndex(exp => exp.id === obj.id)
+    let expenseTable = document.getElementById('expenseTable');
+    totalExpenses.splice(findIndex, 1)
+    window.localStorage.setItem("expenses", JSON.stringify(totalExpenses));
+    expenseTable.deleteRow(selectedElement.parentElement.parentElement.rowIndex)
+}
+
+    
+
+</script>
+</html>

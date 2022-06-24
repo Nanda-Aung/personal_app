@@ -1,0 +1,10 @@
+.banner-left,
+.banner-right {
+    width: 50%;
+    padding: 1%;
+    box-sizing: border-box;
+}
+
+.skill li {
+    display: inline;
+}

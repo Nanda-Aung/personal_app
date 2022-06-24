@@ -1,0 +1,91 @@
+body{
+    background-color: rgb(144, 202, 225);
+    margin: 0 auto;
+}
+main{
+    width: 90%;
+    margin: 0 auto;
+    padding: 0 auto;
+    background: rgb(99, 198, 203);
+}
+header{
+    width: 90%;
+    margin: 0 auto;
+    padding: 2px;
+    background: na;
+}
+.mainMenu{
+    float: right;
+}
+li{
+    list-style: none;
+}
+.mainMenu li a{
+    display: block;
+    text-decoration: none;
+    padding: 5px 15px;
+    border: 1px solid #ffffff;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: #000;
+}
+.mainMenu li{
+    float: left;
+}
+.clearfix{
+    clear: both;
+}
+.subMenu{
+    display: none;
+    position: absolute;
+    background-color: rgb(216, 237, 240);
+    margin: 0;
+    padding: 0;
+}
+.mainMenu li:hover>.subMenu {
+    display: block;
+}
+.subMenu li{
+    float: none;
+}
+.float-left {
+    float: left;
+}
+ul{
+    margin: 0;
+    padding: 0;
+}
+input[type=number] {
+    padding: 10px
+}
+
+button.add-btn {
+    padding: 10px;
+}
+
+button {
+    cursor: pointer;
+}
+.float-right {
+    float: right;
+}
+#snackbar {
+    position: fixed;
+    left: 39%;
+    top: 5px;
+    background-color: black;
+    color: #fff;
+    min-width: 250px;
+    padding: 0 4px;
+    font-size: 18px;
+    border-radius: 2px;
+    display: none;
+    visibility: hidden;
+}
+#open-snackbar {
+    display: none;
+}
+.bg-red {
+    background-color: red;
+ }
+
